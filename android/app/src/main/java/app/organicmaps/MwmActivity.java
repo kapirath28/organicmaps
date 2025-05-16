@@ -516,6 +516,19 @@ public class MwmActivity extends BaseMwmFragmentActivity
 
     if (newUiModeIsCarConnected || newUiModeIsCarDisconnected)
       return;
+
+    // Update navigation bar transparency on configuration change
+    if (!mIsTabletLayout && !ThemeUtils.isNightTheme(this)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        int flags = window.getDecorView().getSystemUiVisibility();
+        flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        window.getDecorView().setSystemUiVisibility(flags);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+      }
+    }
+
     recreate();
   }
 
@@ -1131,6 +1144,18 @@ public class MwmActivity extends BaseMwmFragmentActivity
     mNavigationController.refresh();
     refreshLightStatusBar();
 
+    // Update navigation bar transparency on theme change
+    if (!mIsTabletLayout && !ThemeUtils.isNightTheme(this)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        int flags = window.getDecorView().getSystemUiVisibility();
+        flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        window.getDecorView().setSystemUiVisibility(flags);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+      }
+    }
+
     SensorHelper.from(this).addListener(this);
   }
 
@@ -1328,6 +1353,18 @@ public class MwmActivity extends BaseMwmFragmentActivity
 
     mMapButtonsViewModel.setButtonsHidden(isFullscreen);
     UiUtils.setFullscreen(this, isFullscreen);
+
+    // Restore navigation bar transparency when exiting fullscreen
+    if (!isFullscreen && !mIsTabletLayout && !ThemeUtils.isNightTheme(this)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        int flags = window.getDecorView().getSystemUiVisibility();
+        flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        window.getDecorView().setSystemUiVisibility(flags);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+      }
+    }
   }
 
   private boolean isFullscreen()
