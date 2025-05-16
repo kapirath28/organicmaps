@@ -529,6 +529,20 @@ public class MwmActivity extends BaseMwmFragmentActivity
       }
     }
 
+    // Handle theme changes
+    if (mLastUiMode != newConfig.uiMode) {
+      if (!mIsTabletLayout && !ThemeUtils.isNightTheme(this)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          Window window = getWindow();
+          window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+          int flags = window.getDecorView().getSystemUiVisibility();
+          flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+          window.getDecorView().setSystemUiVisibility(flags);
+          window.setNavigationBarColor(Color.TRANSPARENT);
+        }
+      }
+    }
+
     recreate();
   }
 
@@ -1157,6 +1171,17 @@ public class MwmActivity extends BaseMwmFragmentActivity
     }
 
     SensorHelper.from(this).addListener(this);
+    // Restore navigation bar transparency when returning from other activities
+    if (!mIsTabletLayout && !ThemeUtils.isNightTheme(this)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        int flags = window.getDecorView().getSystemUiVisibility();
+        flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        window.getDecorView().setSystemUiVisibility(flags);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+      }
+    }
   }
 
   @Override
@@ -1341,6 +1366,20 @@ public class MwmActivity extends BaseMwmFragmentActivity
       // Show the toast every time so that users don't forget and don't get trapped in the FS mode.
       // TODO(pastk): there are better solutions, see https://github.com/organicmaps/organicmaps/issues/9344
       Toast.makeText(this, R.string.long_tap_toast, Toast.LENGTH_LONG).show();
+    }
+    else
+    {
+      // Restore navigation bar transparency when exiting fullscreen in light mode
+      if (!mIsTabletLayout && !ThemeUtils.isNightTheme(this)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          Window window = getWindow();
+          window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+          int flags = window.getDecorView().getSystemUiVisibility();
+          flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+          window.getDecorView().setSystemUiVisibility(flags);
+          window.setNavigationBarColor(Color.TRANSPARENT);
+        }
+      }
     }
   }
 
